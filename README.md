@@ -1,38 +1,28 @@
-go6502
-======
+# go6502
+
 
 ```
  | | | | | | | | | | | | | | | | | | | |
 .----------------------------------------.
 |                   GO                   |
 |                  6502                  |
-|                  1213                  |
+|                  0919                  |
 `----------------------------------------'
  | | | | | | | | | | | | | | | | | | | |
 ```
 
-A [go][golang]-based emulator and debugger for the [6502][6502]-based
-[pda6502 homebrew computer][pda6502].
+A [go][golang]-based emulator and debugger for the [6502][6502] microprocessor.
 
-[![GoDoc](https://godoc.org/github.com/pda/go6502?status.png)](https://godoc.org/github.com/pda/go6502)
+This is based on [pda/go6502](https://github.com/pda/go6502) but I've added some features:
 
-Background
-----------
+* Added an emulation for the acia6551 serial chip
+* Memory layout is now configurable using yaml
+* Implemented missing instructions:
+  * Indirect addressing, e.g. jmp ($020e) now works
 
-I've been designing and building a [6502-based homebrew computer][pda6502].
+I'll be adding more documentation as I progress.
 
-It's powered by an 8-bit 6502 (WDC 65C02), varitions of which powered the
-venerable Commodore 64, Apple II, Vic 20, Nintendo and lots more.
-
-74HC-series logic chips map the 64K address space to 32K RAM, 8K ROM, a VIA
-6522 I/O controller, and room for expansion.
-
-The first output device (beyond flashing LEDs) is a [128x32 pixel OLED][oled],
-connected to one of the VIA 6522 parallel ports, with bit-banged serial comms.
-
-
-go6502
-------
+## go6502
 
 go6502 emulates the 6502, address bus, RAM, ROM, 6522 and OLED display well
 enough to run the current pda6502 code and get the same display output.
@@ -61,7 +51,7 @@ Get and run go6502:
 
 * Drop an 8 KB `kernal.rom` into `$PWD/rom/`, where ever that may be.
     * ([pda6502][pda6502] can help; see `memory.conf` and `Makefile`)
-* `go get github.com/pda/go6502`
+* `go get github.com/peter-mount/go6502`
 * `go6502`
 * `go6502 --help`
 * `go6502 --debug`
@@ -81,7 +71,7 @@ time go run go6502.go --debug --debug-commands='bi nop;r;q' --via-ssd1306 && ope
 make && go6502 --debug --debug-symbol-file=build/debug --via-ssd1306 --sd-card=sd.bin
 time go run go6502.go --via-ssd1306 --debug --debug-commands='bi nop;r;q' && open output.png
 go run go6502.go --debug --debug-symbol-file=$HOME/code/pda6502/build/debug --via-ssd1306 --sd-card=$HOME/code/pda6502/sd.bin
-make && go install github.com/pda/go6502 && gtimeout -s INT 0.1 go6502 --via-ssd1306 --sd-card="sd.bin" ; open ssd1306.png
+make && go install github.com/peter-mount/go6502 && gtimeout -s INT 0.1 go6502 --via-ssd1306 --sd-card="sd.bin" ; open ssd1306.png
 go run go6502.go --via-ssd1306 --debug --debug-commands='bi nop;run'
 go build go6502.go && gtimeout -s INT 1 ./go6502 --via-ssd1306 --speedometer
 go build go6502.go && gtimeout -s INT 0.1 ./go6502 --via-ssd1306 --speedometer
@@ -150,7 +140,7 @@ Copyright 2013–2014 Paul Annesley, released under MIT license.
 
 [6502]: http://en.wikipedia.org/wiki/MOS_Technology_6502
 [golang]: http://golang.org/
-[c64.rb]: https://github.com/pda/c64.rb
-[pda6502]: https://github.com/pda/pda6502
+[c64.rb]: https://github.com/peter-mount/c64.rb
+[pda6502]: https://github.com/peter-mount/pda6502
 [homebrew]: http://brew.sh/
 [oled]: https://www.adafruit.com/products/661
