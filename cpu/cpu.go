@@ -12,7 +12,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/pda/go6502/bus"
+	"github.com/peter-mount/go6502/bus"
 )
 
 // status register bits
@@ -131,6 +131,10 @@ func (c *Cpu) memoryAddress(in Instruction) uint16 {
 	case absoluteY:
 		return in.Op16 + uint16(c.Y)
 
+	// indirect, e.g. jmp (020e)
+	case indirect:
+		return c.Bus.Read16(in.Op16)
+
 	// Indexed Indirect (X)
 	// Operand is the zero-page location of a little-endian 16-bit base address.
 	// The X register is added (wrapping; discarding overflow) before loading.
@@ -157,7 +161,8 @@ func (c *Cpu) memoryAddress(in Instruction) uint16 {
 	case zeropageY:
 		return uint16(in.Op8 + c.Y)
 	default:
-		panic("unhandled addressing")
+		panic(fmt.Sprintf("unhandled addressing", in.addressing))
+		//panic("unhandled addressing")
 	}
 }
 
