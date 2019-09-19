@@ -9,25 +9,27 @@ package main
 
 import (
 	"fmt"
+	"github.com/peter-mount/go6502/acia6551"
 	"os"
 	"os/signal"
 
-	"github.com/pda/go6502/bus"
-	"github.com/pda/go6502/cli"
-	"github.com/pda/go6502/cpu"
-	"github.com/pda/go6502/debugger"
-	"github.com/pda/go6502/ili9340"
-	"github.com/pda/go6502/memory"
-	"github.com/pda/go6502/sd"
-	"github.com/pda/go6502/speedometer"
-	"github.com/pda/go6502/spi"
-	"github.com/pda/go6502/ssd1306"
-	"github.com/pda/go6502/via6522"
+	"github.com/peter-mount/go6502/bus"
+	"github.com/peter-mount/go6502/cli"
+	"github.com/peter-mount/go6502/cpu"
+	"github.com/peter-mount/go6502/debugger"
+	"github.com/peter-mount/go6502/ili9340"
+	"github.com/peter-mount/go6502/memory"
+	"github.com/peter-mount/go6502/sd"
+	"github.com/peter-mount/go6502/speedometer"
+	"github.com/peter-mount/go6502/spi"
+	"github.com/peter-mount/go6502/ssd1306"
+	"github.com/peter-mount/go6502/via6522"
 )
 
 const (
-	kernalPath  = "rom/kernal.rom"
-	charRomPath = "rom/char.rom"
+	kernalPath = "kernel/kernel.rom"
+	//kernalPath  = "rom/kernal.rom"
+	//charRomPath = "rom/char.rom"
 )
 
 func main() {
@@ -45,16 +47,22 @@ func mainReturningStatus() int {
 		panic(err)
 	}
 
-	charRom, err := memory.RomFromFile(charRomPath)
-	if err != nil {
-		panic(err)
-	}
+	/*
+		charRom, err := memory.RomFromFile(charRomPath)
+		if err != nil {
+			panic(err)
+		}
+	*/
 
 	ram := &memory.Ram{}
 
 	via := via6522.NewVia6522(via6522.Options{
 		DumpAscii:  options.ViaDumpAscii,
 		DumpBinary: options.ViaDumpBinary,
+	})
+
+	console := acia6551.NewAcia6551(acia6551.Options{
+		Peripheral: acia6551.NewConsole(),
 	})
 
 	if options.Ili9340 {
@@ -97,10 +105,11 @@ func mainReturningStatus() int {
 	// Attach devices to address bus.
 
 	addressBus, _ := bus.CreateBus()
-	addressBus.Attach(ram, "ram", 0x0000)
-	addressBus.Attach(via, "VIA", 0x9000)
-	addressBus.Attach(charRom, "char", 0xB000)
-	addressBus.Attach(kernal, "kernal", 0xF000)
+	_ = addressBus.Attach(ram, "ram", 0x0000)
+	_ = addressBus.Attach(via, "VIA", 0x9000)
+	_ = addressBus.Attach(console, "Console", 0x9010)
+	//_=addressBus.Attach(charRom, "char", 0xB000)
+	_ = addressBus.Attach(kernal, "kernal", 0xF000)
 
 	exitChan := make(chan int, 0)
 
@@ -143,5 +152,6 @@ func mainReturningStatus() int {
 	fmt.Println("Dumping RAM into core file")
 	ram.Dump("core")
 
+	os.Exit(exitStatus)
 	return exitStatus
 }

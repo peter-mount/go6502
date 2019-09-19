@@ -3,7 +3,7 @@ package sd
 import (
 	"io/ioutil"
 
-	"github.com/pda/go6502/spi"
+	"github.com/peter-mount/go6502/spi"
 )
 
 type SdCardPeripheral struct {

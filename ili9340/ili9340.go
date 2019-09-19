@@ -12,7 +12,7 @@ import (
 	"image/png"
 	"os"
 
-	"github.com/pda/go6502/spi"
+	"github.com/peter-mount/go6502/spi"
 )
 
 const (

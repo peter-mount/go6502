@@ -3,7 +3,7 @@ package cpu
 import (
 	"fmt"
 
-	"github.com/pda/go6502/bus"
+	"github.com/peter-mount/go6502/bus"
 )
 
 // Instruction is an OpType plus its operand.

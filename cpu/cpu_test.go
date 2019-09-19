@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/pda/go6502/bus"
-	"github.com/pda/go6502/memory"
+	"github.com/peter-mount/go6502/bus"
+	"github.com/peter-mount/go6502/memory"
 )
 
 func createCpu() *Cpu {

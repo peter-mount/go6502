@@ -54,7 +54,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/pda/go6502/cpu"
+	"github.com/peter-mount/go6502/cpu"
 	"github.com/peterh/liner"
 )
 
