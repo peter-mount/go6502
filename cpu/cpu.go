@@ -33,7 +33,6 @@ const StackBase = 0x0100
 
 // Cpu represents the internal state of the CPU.
 type Cpu struct {
-
 	// Program counter.
 	PC uint16
 
@@ -399,8 +398,18 @@ func (c *Cpu) BPL(in Instruction) {
 
 // BRK: software interrupt
 func (c *Cpu) BRK(in Instruction) {
-	// temporarily used to dump status
-	fmt.Println("BRK:", c)
+	// Push PC
+	c.Bus.Write16(c.stackHead(-1), c.PC-1)
+	c.SP -= 2
+
+	// push SR
+	c.Bus.Write(0x0100+uint16(c.SP), c.SR)
+	c.SP--
+
+	// Move to interrupt vector & set interrupt flag
+	c.PC = c.Bus.Read16(0xfffe)
+	c.setStatus(sInterrupt, true)
+	c.setStatus(sBreak, true)
 }
 
 // CLC: Clear carry flag.
@@ -415,7 +424,7 @@ func (c *Cpu) CLD(in Instruction) {
 
 // CLI: Clear interrupt-disable flag.
 func (c *Cpu) CLI(in Instruction) {
-	c.setStatus(sInterrupt, true)
+	c.setStatus(sInterrupt, false)
 }
 
 // CMP: Compare accumulator with memory.
@@ -624,7 +633,7 @@ func (c *Cpu) SEC(in Instruction) {
 
 // SEI: Set interrupt-disable flag.
 func (c *Cpu) SEI(in Instruction) {
-	c.setStatus(sInterrupt, false)
+	c.setStatus(sInterrupt, true)
 }
 
 // STA: Store accumulator to memory.
